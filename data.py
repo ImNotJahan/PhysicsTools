@@ -43,21 +43,54 @@ class MeasuredData:
         )
         return MeasuredData(average, reading_error, standard_deviation / math.sqrt(n))
 
-    def from_set(measurements: list[float], reading_error: float, standard_error=0.0) -> list[object]:
+    def from_set(measurements: list[float], reading_error: float, standard_error=0.0) -> list:
         return [MeasuredData(x, reading_error, standard_error) for x in measurements]
 
     def __add__(self, other):
         return MeasuredData(
             self.value + other.value,
             max(self.reading_error, other.reading_error),
-            math.sqrt(self.standard_error ** 2 + other.standard_error ** 2)
+            math.sqrt(self.error() ** 2 + other.error() ** 2)
+        )
+
+    def __sub__(self, other):
+        return MeasuredData(
+            self.value - other.value,
+            max(self.reading_error, other.reading_error),
+            math.sqrt(self.error() ** 2 + other.error() ** 2)
+        )
+
+    def __mul__(self, other):
+        return MeasuredData(
+            self.value * other.value,
+            max(self.reading_error, other.reading_error),
+            (
+                self.value * other.value *
+                math.sqrt(
+                    (self.error() / self.value) ** 2 +
+                    (other.error() / self.value) ** 2
+                )
+            )
+        )
+
+    def __div__(self, other):
+        return MeasuredData(
+            self.value / other.value,
+            max(self.reading_error, other.reading_error),
+            (
+                (self.value / other.value) *
+                math.sqrt(
+                    (self.error() / self.value) ** 2 +
+                    (other.error() / self.value) ** 2
+                )
+            )
         )
 
     def __pow__(self, other: int):
         return MeasuredData(
             self.value ** other,
             self.reading_error,
-            other * self.value ** (other - 1) * self.standard_error
+            other * self.value ** (other - 1) * self.error()
         )
 
     def __str__(self):
