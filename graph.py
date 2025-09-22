@@ -2,6 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from data import MeasuredData
 
+def show():
+    plt.show()
+
 class SimpleGraph:
     def __init__(self, title: str):
         fig, ax = plt.subplots()
@@ -51,7 +54,7 @@ class SimpleGraph:
         self.axes.errorbar(
             self.x_data, self.y_data,
             yerr=self.y_error, xerr=self.x_error,
-            fmt=".", capsize=2, label="Data"
+            fmt=".", capsize=2, label=self.y_label
         )
 
     def best_fit(self) -> tuple:
@@ -64,9 +67,12 @@ class SimpleGraph:
             (linearfit[1], np.sqrt(covariance_matrix[1][1]))
         )
 
-    def show(self) -> None:
+    def put_labels(self) -> None:
         self.axes.set(title=self.title, xlabel=self.x_label, ylabel=self.y_label)
-        plt.show()
+
+    def put_legend(self) -> None:
+        self.axes.legend()
+
 
 if __name__ == "__main__":
     import doctest

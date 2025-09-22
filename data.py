@@ -47,50 +47,68 @@ class MeasuredData:
         return [MeasuredData(x, reading_error, standard_error) for x in measurements]
 
     def __add__(self, other):
-        return MeasuredData(
-            self.value + other.value,
-            max(self.reading_error, other.reading_error),
-            math.sqrt(self.error() ** 2 + other.error() ** 2)
-        )
+        """
+        >>> print(MeasuredData(10.4, 0.0, 0.5) + MeasuredData(3.0, 1.0, 0.2))
+        13.0±1.
+        >>> print(MeasuredData(12.34, 0.05, 0.02) + 10.111)
+        22.45±0.05
+        """
+        if isinstance(other, MeasuredData):
+            return MeasuredData(
+                self.value + other.value,
+                max(self.reading_error, other.reading_error),
+                math.sqrt(self.standard_error ** 2 + other.standard_error ** 2)
+            )
+
+        return MeasuredData(self.value + other, self.reading_error, self.standard_error)
 
     def __sub__(self, other):
-        return MeasuredData(
-            self.value - other.value,
-            max(self.reading_error, other.reading_error),
-            math.sqrt(self.error() ** 2 + other.error() ** 2)
-        )
+        if isinstance(other, MeasuredData):
+            return MeasuredData(
+                self.value - other.value,
+                max(self.reading_error, other.reading_error),
+                math.sqrt(self.standard_error ** 2 + other.standard_error ** 2)
+            )
+
+        return MeasuredData(self.value - other, self.reading_error, self.standard_error)
 
     def __mul__(self, other):
-        return MeasuredData(
-            self.value * other.value,
-            max(self.reading_error, other.reading_error),
-            (
-                self.value * other.value *
-                math.sqrt(
-                    (self.error() / self.value) ** 2 +
-                    (other.error() / self.value) ** 2
+        if isinstance(other, MeasuredData):
+            return MeasuredData(
+                self.value * other.value,
+                max(self.reading_error, other.reading_error),
+                (
+                    self.value * other.value *
+                    math.sqrt(
+                        (self.standard_error / self.value) ** 2 +
+                        (other.standard_error / other.value) ** 2
+                    )
                 )
             )
-        )
 
-    def __div__(self, other):
-        return MeasuredData(
-            self.value / other.value,
-            max(self.reading_error, other.reading_error),
-            (
-                (self.value / other.value) *
-                math.sqrt(
-                    (self.error() / self.value) ** 2 +
-                    (other.error() / self.value) ** 2
+        return MeasuredData(self.value * other, self.reading_error, self.value * other * math.sqrt(self.standard_error / self.value))
+
+    def __truediv__(self, other):
+        if isinstance(other, MeasuredData):
+            return MeasuredData(
+                self.value / other.value,
+                max(self.reading_error, other.reading_error),
+                (
+                    (self.value / other.value) *
+                    math.sqrt(
+                        (self.standard_error / self.value) ** 2 +
+                        (other.standard_error / other.value) ** 2
+                    )
                 )
             )
-        )
+
+        return MeasuredData(self.value / other, self.reading_error, self.value / other * math.sqrt(self.standard_error / self.value))
 
     def __pow__(self, other: int):
         return MeasuredData(
             self.value ** other,
             self.reading_error,
-            other * self.value ** (other - 1) * self.error()
+            other * self.value ** (other - 1) * self.standard_error
         )
 
     def __str__(self):
