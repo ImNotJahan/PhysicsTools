@@ -54,62 +54,97 @@ class MeasuredData:
         22.45±0.05
         """
         if isinstance(other, MeasuredData):
+            error = lambda x, y: math.sqrt(x ** 2 + y ** 2)
             return MeasuredData(
                 self.value + other.value,
-                max(self.reading_error, other.reading_error),
-                math.sqrt(self.error() ** 2 + other.error() ** 2)
+                error(self.reading_error, other.reading_error),
+                error(self.standard_error, self.standard_error)
             )
 
-        return MeasuredData(self.value + other, self.reading_error, self.error())
+        return MeasuredData(self.value + other, self.reading_error, self.standard_error)
 
     def __sub__(self, other):
         if isinstance(other, MeasuredData):
+            error = lambda x, y: math.sqrt(x ** 2 + y ** 2)
             return MeasuredData(
                 self.value - other.value,
-                max(self.reading_error, other.reading_error),
-                math.sqrt(self.error() ** 2 + other.error() ** 2)
+                error(self.reading_error, other.reading_error),
+                error(self.standard_error, self.standard_error)
             )
 
-        return MeasuredData(self.value - other, self.reading_error, self.error())
+        return MeasuredData(self.value - other, self.reading_error, self.standard_error)
 
     def __mul__(self, other):
         if isinstance(other, MeasuredData):
+            def error(sx, sy) -> float:
+                return (
+                            (self.value * other.value) *
+                            math.sqrt (
+                                (sx / self.value) ** 2 +
+                                (sy / other.value) ** 2
+                            )
+                        )
+
             return MeasuredData(
                 self.value * other.value,
-                max(self.reading_error, other.reading_error),
-                (
-                    self.value * other.value *
-                    math.sqrt(
-                        (self.error() / self.value) ** 2 +
-                        (other.error() / other.value) ** 2
-                    )
-                )
+                error(self.reading_error, other.reading_error),
+                error(self.standard_error, other.standard_error)
             )
 
-        return MeasuredData(self.value * other, self.reading_error, self.value * other * math.sqrt(self.error() / self.value))
+        error = lambda s: (self.value * other) * (s / self.value)
+
+        return MeasuredData(self.value * other, error(self.reading_error), error(self.standard_error))
 
     def __truediv__(self, other):
         if isinstance(other, MeasuredData):
+            def error(sx, sy) -> float:
+                return (
+                            (self.value / other.value) *
+                            math.sqrt (
+                                (sx / self.value) ** 2 +
+                                (sy / other.value) ** 2
+                            )
+                        )
+
             return MeasuredData(
                 self.value / other.value,
-                max(self.reading_error, other.reading_error),
-                (
-                    (self.value / other.value) *
-                    math.sqrt(
-                        (self.error() / self.value) ** 2 +
-                        (other.error() / other.value) ** 2
-                    )
-                )
+                error(self.reading_error, other.reading_error),
+                error(self.standard_error, other.standard_error)
             )
 
-        return MeasuredData(self.value / other, self.reading_error, self.value / other * math.sqrt(self.error() / self.value))
+        error = lambda s: (self.value / other) * (s / self.value)
+
+        return MeasuredData(self.value / other, error(self.reading_error), error(self.standard_error))
 
     def __pow__(self, other: int):
+        error = lambda s: other * self.value ** (other - 1) * s
+
         return MeasuredData(
             self.value ** other,
-            self.reading_error,
-            other * self.value ** (other - 1) * self.error()
+            error(self.reading_error),
+            error(self.standard_error)
         )
+
+    def sine(self):
+        error = lambda s: s * math.cos(self.value)
+
+        return MeasuredData(
+            math.sin(self.value),
+            error(self.reading_error),
+            error(self.standard_error)
+        )
+
+    def cosine(self):
+        error = lambda s: s * math.sin(self.value)
+
+        return MeasuredData(
+            math.cos(self.value),
+            error(self.reading_error),
+            error(self.standard_error)
+        )
+
+    def tangent(self):
+        return self.sine() / self.cosine()
 
     def __str__(self):
         """
