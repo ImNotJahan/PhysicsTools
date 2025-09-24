@@ -2,6 +2,8 @@ import math
 import numpy as np
 import pandas as pd
 
+safe_div = lambda x, y: 0 if y == 0 else x / y
+
 class MeasuredData:
     def __init__(self, measurement: float, reading_error: float, standard_error=0.0):
         self.value = measurement
@@ -80,8 +82,8 @@ class MeasuredData:
                 return (
                             (self.value * other.value) *
                             math.sqrt (
-                                (sx / self.value) ** 2 +
-                                (sy / other.value) ** 2
+                                safe_div(sx, self.value) ** 2 +
+                                safe_div(sy, other.value) ** 2
                             )
                         )
 
@@ -91,7 +93,7 @@ class MeasuredData:
                 error(self.standard_error, other.standard_error)
             )
 
-        error = lambda s: (self.value * other) * (s / self.value)
+        error = lambda s: (self.value * other) * safe_div(s, self.value)
 
         return MeasuredData(self.value * other, error(self.reading_error), error(self.standard_error))
 
@@ -112,7 +114,7 @@ class MeasuredData:
                 error(self.standard_error, other.standard_error)
             )
 
-        error = lambda s: (self.value / other) * (s / self.value)
+        error = lambda s: (self.value / other) * safe_div(s, self.value)
 
         return MeasuredData(self.value / other, error(self.reading_error), error(self.standard_error))
 
@@ -146,7 +148,7 @@ class MeasuredData:
     def tangent(self):
         return self.sine() / self.cosine()
 
-    def __str__(self):
+    def __str__(self) -> str:
         """
         >>> str(MeasuredData(1234.56789, 0.05333))
         '1234.57±0.05'
@@ -169,6 +171,11 @@ class MeasuredData:
             decimal_num += change
 
         return str(round(self.value, decimal_num)) + "±" + err
+
+    def latex(self) -> str:
+        parts = str(self).split("±")
+
+        return "${} \\pm {}$".format(parts[0], parts[1])
 
 # from here on out we have some utility functions
 def csv_to_numpy(file_name: str, rotate=False) -> np.ndarray:
