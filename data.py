@@ -37,17 +37,6 @@ class MeasuredData:
         # data point was an int or something
         return float(self.value)
 
-    def avg_from_set(measurements: list[float], reading_error: float) -> object:
-        n = len(measurements)
-        average = sum(measurements) / n
-        standard_deviation = math.sqrt(
-            (1 / (n - 1)) * sum(([(x - average)**2 for x in measurements]))
-        )
-        return MeasuredData(average, reading_error, standard_deviation / math.sqrt(n))
-
-    def from_set(measurements: list[float], reading_error: float, standard_error=0.0) -> list:
-        return [MeasuredData(x, reading_error, standard_error) for x in measurements]
-
     def __add__(self, other):
         """
         >>> print(MeasuredData(10.4, 0.0, 0.5) + MeasuredData(3.0, 1.0, 0.2))
@@ -60,7 +49,7 @@ class MeasuredData:
             return MeasuredData(
                 self.value + other.value,
                 error(self.reading_error, other.reading_error),
-                error(self.standard_error, self.standard_error)
+                error(self.standard_error, other.standard_error)
             )
 
         return MeasuredData(self.value + other, self.reading_error, self.standard_error)
@@ -71,7 +60,7 @@ class MeasuredData:
             return MeasuredData(
                 self.value - other.value,
                 error(self.reading_error, other.reading_error),
-                error(self.standard_error, self.standard_error)
+                error(self.standard_error, other.standard_error)
             )
 
         return MeasuredData(self.value - other, self.reading_error, self.standard_error)
@@ -177,6 +166,9 @@ class MeasuredData:
 
         return "${} \\pm {}$".format(parts[0], parts[1])
 
+    def from_set(measurements: list[float], reading_error: float, standard_error=0.0) -> list:
+        return [MeasuredData(x, reading_error, standard_error) for x in measurements]
+
 # from here on out we have some utility functions
 def csv_to_numpy(file_name: str, rotate=False) -> np.ndarray:
     if rotate:
@@ -191,6 +183,21 @@ def remove_nan(data_points: np.ndarray):
 def remove_nan_2d(data_points: np.ndarray):
     return [remove_nan(x) for x in data_points]
 
+def avg_from_set(measurements: list[float], reading_error: float) -> object:
+    n = len(measurements)
+    average = sum(measurements) / n
+    standard_deviation = math.sqrt(
+        (1 / (n - 1)) * sum(([(x - average)**2 for x in measurements]))
+    )
+    return MeasuredData(average, reading_error, standard_deviation / math.sqrt(n))
+
+def avg_measured_datas(measurements: list[MeasuredData]) -> MeasuredData:
+    avg = MeasuredData(0, 0)
+
+    for point in measurements:
+        avg += point
+
+    return avg / len(measurements)
 
 if __name__ == "__main__":
     import doctest
