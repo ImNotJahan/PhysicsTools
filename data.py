@@ -16,7 +16,7 @@ class MeasuredData:
         >>> MeasuredData(100.2, 2.4, 10.12).error()
         10.12
         """
-        return max(self.reading_error, self.standard_error)
+        return max(abs(self.reading_error), abs(self.standard_error))
 
     def __int__(self):
         """
