@@ -54,6 +54,10 @@ class MeasuredData:
 
         return MeasuredData(self.value + other, self.reading_error, self.standard_error)
 
+    def __radd__(self, other):
+        # addition is symmetric
+        return self.__add__(other)
+
     def __sub__(self, other):
         if isinstance(other, MeasuredData):
             error = lambda x, y: math.sqrt(x ** 2 + y ** 2)
@@ -86,6 +90,10 @@ class MeasuredData:
 
         return MeasuredData(self.value * other, error(self.reading_error), error(self.standard_error))
 
+    def __rmul__(self, other):
+        # multiplication is symmetric
+        return self.__mul__(other)
+
     def __truediv__(self, other):
         if isinstance(other, MeasuredData):
             def error(sx, sy) -> float:
@@ -108,7 +116,7 @@ class MeasuredData:
         return MeasuredData(self.value / other, error(self.reading_error), error(self.standard_error))
 
     def __pow__(self, other: int):
-        error = lambda s: other * self.value ** (other - 1) * s
+        error = lambda s: abs(other * self.value ** (other - 1) * s)
 
         return MeasuredData(
             self.value ** other,
@@ -117,7 +125,7 @@ class MeasuredData:
         )
 
     def sine(self):
-        error = lambda s: s * math.cos(self.value)
+        error = lambda s: abs(s * math.cos(self.value))
 
         return MeasuredData(
             math.sin(self.value),
@@ -126,7 +134,7 @@ class MeasuredData:
         )
 
     def cosine(self):
-        error = lambda s: s * math.sin(self.value)
+        error = lambda s: abs(s * math.sin(self.value))
 
         return MeasuredData(
             math.cos(self.value),
@@ -136,6 +144,27 @@ class MeasuredData:
 
     def tangent(self):
         return self.sine() / self.cosine()
+
+    def arctan(self):
+        error = lambda s: s / (1 + self.value ** 2)
+
+        return MeasuredData(
+            math.atan(self.value),
+            error(self.reading_error),
+            error(self.standard_error)
+        )
+
+    def arcsin(self):
+        error = lambda s: s / math.sqrt(1 - self.value ** 2)
+
+        return MeasuredData(
+            math.asin(self.value),
+            error(self.reading_error),
+            error(self.standard_error)
+        )
+
+    def __neg__(self):
+        return self.__mul__(-1)
 
     def __str__(self) -> str:
         """
