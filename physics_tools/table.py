@@ -37,7 +37,7 @@ class Table2D:
 
         for row in self.rows:
             sb += "\t\t"
-            sb += " & ".join([x.latex(True) for x in row])
+            sb += " & ".join([x.latex() if isinstance(x, MeasuredData) else str(x) for x in row])
             sb += " \\\\\n\r\t\t\\hline\n\r\n\r"
 
         sb += "\t\\end {tabular}\n\r"

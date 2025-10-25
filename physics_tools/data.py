@@ -1,6 +1,7 @@
 import math
 import numpy as np
 import pandas as pd
+from typing import Iterable
 
 safe_div = lambda x, y: 0 if y == 0 else x / y
 
@@ -166,6 +167,15 @@ class MeasuredData:
     def __neg__(self):
         return self.__mul__(-1)
 
+    def __abs__(self):
+        return MeasuredData(
+            abs(self.value),
+            self.reading_error,
+            self.standard_error
+        )
+
+
+
     def __str__(self) -> str:
         """
         >>> str(MeasuredData(1234.56789, 0.05333))
@@ -195,7 +205,7 @@ class MeasuredData:
 
         return "${} \\pm {}$".format(parts[0], parts[1])
 
-    def from_set(measurements: list[float], reading_error: float, standard_error=0.0) -> list:
+    def from_set(measurements: Iterable[float], reading_error: float, standard_error=0.0) -> list:
         return [MeasuredData(x, reading_error, standard_error) for x in measurements]
 
 # from here on out we have some utility functions
@@ -205,11 +215,11 @@ def csv_to_numpy(file_name: str, rotate=False) -> np.ndarray:
     return pd.read_csv(file_name).to_numpy()
 
 
-def remove_nan(data_points: np.ndarray):
+def remove_nan(data_points: np.ndarray) -> list:
     return [x for x in data_points if not np.isnan(x)]
 
 
-def remove_nan_2d(data_points: np.ndarray):
+def remove_nan_2d(data_points: np.ndarray) -> list:
     return [remove_nan(x) for x in data_points]
 
 def avg_from_set(measurements: list[float], reading_error: float) -> object:
