@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from data import MeasuredData
+from .data import MeasuredData
 
 def show():
     plt.show()

@@ -1,4 +1,4 @@
-from data import MeasuredData
+from .data import MeasuredData
 
 class Table2D:
     def __init__(self, columns=None, rows=None, column_labels=None, row_labels=None):
