@@ -1,4 +1,4 @@
-from physics_tools import MeasuredData
+from physics_utils import MeasuredData
 
 def measured_data_examples():
     # Example 1: Basic Arithmetic with MeasuredData

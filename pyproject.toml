@@ -6,3 +6,23 @@ build-backend = "setuptools.build_meta"
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 addopts = "-v --cov=physics_tools --cov-report=term-missing"
+
+[project]
+name = "physics-utils"
+version = "0.0.1"
+authors = [
+  { name="Jahan Rashidi", email="hiimjahan@gmail.com" },
+]
+description = "Helpers for empirical data handling and plotting"
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+license = "GPL-3.0-only"
+license-files = ["LICEN[CS]E*"]
+
+[project.urls]
+Homepage = "https://github.com/ImNotJahan/PhysicsTools"
+Issues = "https://github.com/ImNotJahan/PhysicsTools/issues"

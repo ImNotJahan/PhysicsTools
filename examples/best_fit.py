@@ -1,5 +1,5 @@
-from physics_tools.graph import SimpleGraph, show
-from physics_tools.data import MeasuredData
+from physics_utils.graph import SimpleGraph, show
+from physics_utils.data import MeasuredData
 
 scatterplot = SimpleGraph("Thoughts vs hours thinking")
 

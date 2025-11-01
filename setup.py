@@ -1,14 +1,14 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="physics-tools",
+    name="physics-utils",
     version="0.0.1",
     description="Helpers for physics data handling and plotting",
     long_description=open("README.md", encoding="utf-8").read(),
     long_description_content_type="text/markdown",
     author="Jahan Rashidi",
     url="https://github.com/ImNotJahan/PhysicsTools",
-    license="MIT",
+    license="GPL-3.0-only",
     packages=find_packages(exclude=("tests", "docs", "labs", "examples")),
     python_requires=">=3.9",
     install_requires=[

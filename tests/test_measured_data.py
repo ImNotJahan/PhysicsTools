@@ -1,5 +1,5 @@
 import unittest
-from physics_tools import MeasuredData
+from physics_utils import MeasuredData
 import math
 
 
