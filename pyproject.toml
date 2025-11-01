@@ -23,6 +23,16 @@ classifiers = [
 license = "GPL-3.0-only"
 license-files = ["LICEN[CS]E*"]
 
+dependencies = [
+    "numpy~=2.3.1",
+    "matplotlib~=3.10.6",
+    "scipy~=1.16.2",
+    "pandas~=2.3.2"
+]
+
+[tool.setuptools.packages.find]
+exclude = ["tests", "docs", "examples", "labs"]
+
 [project.urls]
 Homepage = "https://github.com/ImNotJahan/PhysicsTools"
 Source = "https://github.com/ImNotJahan/PhysicsTools"
