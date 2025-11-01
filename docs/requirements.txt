@@ -3,3 +3,7 @@ myst-parser
 sphinx-autodoc-typehints
 sphinxcontrib-napoleon
 furo
+numpy~=2.3.1
+matplotlib~=3.10.6
+scipy~=1.16.2
+pandas~=2.3.2
