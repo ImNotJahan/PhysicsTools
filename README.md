@@ -10,5 +10,5 @@ python3 -m pip install physics_utils
 ```
 
 ## Usage
-For information on using the package, take a look at the (documentation)[https://physics-utils.readthedocs.io] and
-(examples)[https://github.com/ImNotJahan/PhysicsTools/tree/main/examples].
+For information on using the package, take a look at the [documentation](https://physics-utils.readthedocs.io) and
+[examples](https://github.com/ImNotJahan/PhysicsTools/tree/main/examples).
