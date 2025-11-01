@@ -2,7 +2,7 @@
 ## Installation
 `physics_utils` can be installed straight from PyPI using pip, like so:
 ```batch
-python3 -m pip install physics_utils
+python3 -m pip install physics-utils
 ```
 
 ## Usage
