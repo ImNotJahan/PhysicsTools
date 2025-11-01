@@ -1,32 +1,36 @@
 from .data import MeasuredData
 
 class Table2D:
-    def __init__(self, columns=None, rows=None, column_labels=None, row_labels=None):
-        if columns is None:
-            columns = []
+    """
+    Creates a two dimensional table, with the first row having labels for all the data
+    """
+    def __init__(self, rows=None, column_labels=None):
         if column_labels is None:
             column_labels = []
         if rows is None:
             rows = []
-        if row_labels is None:
-            row_labels = []
 
-        self.columns = columns
         self.rows = rows
         self.column_labels = column_labels
-        self.row_labels = row_labels
 
-    def set_columns(self, columns: list[MeasuredData], column_labels: list[str]) -> None:
+    def set_labels(self, column_labels: list[str]) -> None:
+        """
+        Sets the labels for each column in the table
+        """
         # note to self: columns are along y
-        self.columns = columns
         self.column_labels = column_labels
 
-    def set_rows(self, rows: list[MeasuredData], row_labels: list[str]) -> None:
+    def set_data(self, rows: list[list[MeasuredData]]) -> None:
+        """
+        Sets the rows of the table, with each sublist in rows being a row
+        """
         # note to self: rows are along x
         self.rows = rows
-        self.row_labels = row_labels
 
     def latex(self) -> str:
+        """
+        Generates this table in LaTeX
+        """
         sb = "\\begin {center}\n\r"
         sb += "\t\\begin {tabular}"
         sb += "{" + "|c" * len(self.column_labels) + "|}\n\r"

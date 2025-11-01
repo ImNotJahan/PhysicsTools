@@ -183,3 +183,5 @@ cython_debug/
 
 labs/
 labs/*
+docs/api/generated/
+**/.DS_Store

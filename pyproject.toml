@@ -25,4 +25,6 @@ license-files = ["LICEN[CS]E*"]
 
 [project.urls]
 Homepage = "https://github.com/ImNotJahan/PhysicsTools"
+Source = "https://github.com/ImNotJahan/PhysicsTools"
 Issues = "https://github.com/ImNotJahan/PhysicsTools/issues"
+Documentation = "https://physics-utils.readthedocs.io"

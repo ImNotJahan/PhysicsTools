@@ -1,5 +1,9 @@
 from .data import MeasuredData
+from . import data, graph, table
 
 __all__ = [
-    "MeasuredData"
+    "MeasuredData",
+    "data",
+    "graph",
+    "table"
 ]

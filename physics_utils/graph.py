@@ -3,9 +3,15 @@ import matplotlib.pyplot as plt
 from .data import MeasuredData
 
 def show():
+    """
+    Displays all created graphs
+    """
     plt.show()
 
 class SimpleGraph:
+    """
+    Creates a plot with automatic error bars
+    """
     def __init__(self, title: str):
         fig, ax = plt.subplots()
         self.figure = fig
@@ -23,9 +29,16 @@ class SimpleGraph:
     def set_x_axis(self, values: list[MeasuredData], label: str) -> None:
         """
         Sets the x-axis values and error
-        :param values: The data points for the x-axis
-        :param label: The label for the x-axis
 
+        Parameters
+        ----------
+        values : list[MeasuredData]
+            The data points for the x-axis
+        label : str
+            The label for these data points
+
+        Examples
+        --------
         >>> graph = SimpleGraph("New Graph")
         >>> graph.set_x_axis([MeasuredData(0, 1), MeasuredData(1, 1), MeasuredData(2, 1)], "X-Axis")
         >>> graph.x_data
@@ -42,14 +55,22 @@ class SimpleGraph:
     def set_y_axis(self, values: list[MeasuredData], label: str) -> None:
         """
         Sets the y-axis values and error
-        :param values: The data points for the y-axis
-        :param label: The label for the y-axis
+
+        Parameters
+        ----------
+        values : list[MeasuredData]
+            The data points for the y-axis
+        label : str
+            The label for these data points
         """
         self.y_label = label
         self.y_data = [float(x) for x in values]
         self.y_error = [x.error() for x in values]
 
     def plot_points(self) -> None:
+        """
+        Plots the currently set x- and y-axes on the graph, with error bars
+        """
         #self.axes.plot(self.x_data, self.y_data, ".")
         self.axes.errorbar(
             self.x_data, self.y_data,
@@ -58,6 +79,16 @@ class SimpleGraph:
         )
 
     def best_fit(self) -> tuple:
+        """
+        Creates a linear line of best fit on the graph, for the last set x- and y-axes
+
+        Returns
+        -------
+        tuple
+            Returns a tuple containing two tuples, with both tuples containing two values - the first value being
+            a measurement, and the second an uncertainty.
+            The first tuple represents the slope; and the second, the y-intercept.
+        """
         linearfit, covariance_matrix = np.polyfit(self.x_data, self.y_data, 1, cov=True)
         fitted_y = [linearfit[1] + i * linearfit[0] for i in self.x_data]
         self.axes.plot(self.x_data, fitted_y, label="Line of Best Fit")
@@ -68,9 +99,15 @@ class SimpleGraph:
         )
 
     def put_labels(self) -> None:
+        """
+        Adds axes labels to the graph, using the labels given on the last sets of x- and y-axes datas
+        """
         self.axes.set(title=self.title, xlabel=self.x_label, ylabel=self.y_label)
 
     def put_legend(self) -> None:
+        """
+        Adds a legend to the graph
+        """
         self.axes.legend()
 
 
