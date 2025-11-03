@@ -185,3 +185,5 @@ labs/
 labs/*
 docs/api/generated/
 **/.DS_Store
+
+*.bat

@@ -9,7 +9,7 @@ addopts = "-v --cov=physics_tools --cov-report=term-missing"
 
 [project]
 name = "physics-utils"
-version = "0.1.0"
+version = "0.2.0"
 authors = [
   { name="Jahan Rashidi", email="hiimjahan@gmail.com" },
 ]
