@@ -17,6 +17,9 @@ class StepsExtension(md):
     every calculation done with, and keeps a log of every value and uncertainty calculation, allowing for generation
     of LaTeX equations demonstrating the evaluation of the object's state.
     """
+    value_step = uncertainty_step = step_variables = None
+    values_wrapped = uncertainty_wrapped = has_steps = False
+
     def _new(self, measurement: float, reading_error: float, standard_error=0.0,
              value_step=None, uncertainty_step=None, step_variables=None,
              value_wrapped=False, uncertainty_wrapped=False):
