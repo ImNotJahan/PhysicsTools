@@ -43,7 +43,7 @@ expr:   '#' expr
     ;
 
 symbol: SYMBOL ;
-package: PACKAGE ;
+package: SYMBOL ('.' SYMBOL)* ;
 
 list:    '[' (expr (',' expr)*)? ']' ;
 
@@ -70,7 +70,6 @@ FLOAT   : '-'? DIGIT+ '.' DIGIT*
 
 SYMBOL  : (LOWER|UPPER|'_') (LOWER|UPPER|'_'|DIGIT)* ;
 STRING  : '"' ~('"')* '"' ;
-PACKAGE : (LOWER|UPPER|'_') (LOWER|UPPER|'_'|DIGIT|'.')* ;
 
 fragment DIGIT : [0-9] ;
 fragment LOWER : [a-z] ;
