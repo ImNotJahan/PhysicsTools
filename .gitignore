@@ -186,4 +186,4 @@ labs/*
 docs/api/generated/
 **/.DS_Store
 
-*.bat
+physics_utils/script/antlr_build/
