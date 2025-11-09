@@ -1,7 +1,7 @@
-from antlr_build.ExprParser import ExprParser
+from .antlr_build.ExprParser import ExprParser
 from physics_utils import MeasuredData
-from util import *
-from expressions import anonymous_fn
+from .util import *
+from .expressions import anonymous_fn
 from importlib import import_module
 
 def assignment(interpreter, variable: str, value) -> None:

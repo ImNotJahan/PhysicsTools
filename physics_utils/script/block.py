@@ -1,6 +1,6 @@
-from antlr_build.ExprParser import ExprParser
+from .antlr_build.ExprParser import ExprParser
 
-from util import *
+from .util import *
 
 def handle_block(interpreter, context, output_expr: bool):
     for i in range(count(context)):

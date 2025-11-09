@@ -1,4 +1,4 @@
-from physics_utils      import MeasuredData
+from physics_utils import MeasuredData
 
 import numpy
 

@@ -9,7 +9,7 @@ addopts = "-v --cov=physics_tools --cov-report=term-missing"
 
 [project]
 name = "physics-utils"
-version = "0.2.1"
+version = "0.3.0"
 authors = [
   { name="Jahan Rashidi", email="hiimjahan@gmail.com" },
 ]
@@ -27,7 +27,8 @@ dependencies = [
     "numpy~=2.3.1",
     "matplotlib~=3.10.6",
     "scipy~=1.16.2",
-    "pandas~=2.3.2"
+    "pandas~=2.3.2",
+    "antlr4-python3-runtime~=4.13.0"
 ]
 
 [tool.setuptools.packages.find]

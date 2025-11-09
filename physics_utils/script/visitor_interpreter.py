@@ -1,14 +1,14 @@
-from antlr_build.ExprParser import ExprParser
-from antlr_build.ExprVisitor import ExprVisitor
+from .antlr_build.ExprParser import ExprParser
+from .antlr_build.ExprVisitor import ExprVisitor
 
 from physics_utils import MeasuredData
 
-from statements  import handle_statement
-from expressions import handle_expression
-from block       import handle_block
-from control     import handle_control
-from datatypes   import make_list, make_number, make_string, make_symbol, make_package
-from environment import Environment, default_environment
+from .statements  import handle_statement
+from .expressions import handle_expression
+from .block       import handle_block
+from .control     import handle_control
+from .datatypes   import make_list, make_number, make_string, make_symbol, make_package
+from .environment import Environment, default_environment
 
 
 class VisitorInterpreter(ExprVisitor):

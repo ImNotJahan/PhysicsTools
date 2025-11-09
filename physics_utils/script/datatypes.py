@@ -1,6 +1,6 @@
-from util import *
+from .util import *
 from physics_utils import MeasuredData
-from antlr_build.ExprParser import ExprParser
+from .antlr_build.ExprParser import ExprParser
 
 def make_list(interpreter, context) -> list:
     result = []

@@ -1,4 +1,4 @@
-from util import *
+from .util import *
 
 def handle_control(interpreter, context):
     keyword = get_str(context, 0)

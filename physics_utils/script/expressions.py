@@ -1,5 +1,5 @@
-from util import *
-from environment import Environment
+from .util import *
+from .environment import Environment
 
 operators = {
     '+': lambda x, y: x + y, '-': lambda x, y: x - y, '*': lambda x, y: x * y, '/': lambda x, y: x / y,

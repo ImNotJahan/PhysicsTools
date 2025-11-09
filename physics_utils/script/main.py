@@ -1,8 +1,8 @@
 import sys
-from antlr4 import *
-from antlr_build.ExprLexer import ExprLexer
-from antlr_build.ExprParser import ExprParser
-from visitor_interpreter import VisitorInterpreter
+from antlr4 import CommonTokenStream, FileStream, InputStream
+from .antlr_build.ExprLexer import ExprLexer
+from .antlr_build.ExprParser import ExprParser
+from .visitor_interpreter import VisitorInterpreter
 import logging
 
 def parse_stream(parser: ExprParser, stream: FileStream | InputStream) -> ExprParser.ProgContext:
