@@ -221,7 +221,7 @@ class StepsExtension(md):
 
         if plug_in_vars:
             md_p = lambda x: isinstance(x, StepsExtension) # measured data predicate (i.e., is measured data)
-            md_s = lambda x: str(x).split("±") # measured data split
+            md_s = lambda x: str(x).split("±") if "±" in str(x) else (str(x), "0") # measured data split
             en_v = lambda: enumerate(self.step_variables) # enumerate (step) variables
 
             if trunc_nums:
@@ -267,7 +267,7 @@ class StepsExtension(md):
             nonlocal seen_variables
 
             md_p = lambda x: isinstance(x, StepsExtension)  # measured data predicate (i.e., is measured data)
-            md_s = lambda x: str(x).split("±")  # measured data split
+            md_s = lambda x: str(x).split("±") if "±" in str(x) else (str(x), "0")   # measured data split
             en_v = lambda: enumerate(dp.step_variables)  # enumerate (step) variables
 
             if not dp.has_steps:
@@ -278,11 +278,11 @@ class StepsExtension(md):
                     else:
                         return dp.value, dp.error()
                 else:
-                    if dp not in seen_variables:
-                        seen_variables[dp] = var_letters[len(seen_variables)]
+                    if id(dp) not in seen_variables:
+                        seen_variables[id(dp)] = var_letters[len(seen_variables)]
 
-                    return (VariableLabel(" {} ".format(seen_variables[dp])),
-                            VariableLabel(" s_{} ".format(seen_variables[dp])))
+                    return (VariableLabel(" {} ".format(seen_variables[id(dp)])),
+                            VariableLabel(" s_{} ".format(seen_variables[id(dp)])))
 
             norm_vars = {var_letters[i]: expand_eqs(v)[0] for i, v in en_v() if md_p(v)}
             norm_vars.update({var_letters[i]: v for i, v in en_v() if not md_p(v)})

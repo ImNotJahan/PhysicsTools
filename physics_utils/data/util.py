@@ -40,6 +40,7 @@ def avg_from_set(measurements: list[float], reading_error: float) -> MeasuredDat
     return MeasuredData(average, reading_error, standard_deviation / math.sqrt(n))
 
 def avg_measured_datas(measurements: list[MeasuredData]) -> MeasuredData:
+    import math
     """
     Averages a list of MeasuredDatas
 
@@ -53,9 +54,9 @@ def avg_measured_datas(measurements: list[MeasuredData]) -> MeasuredData:
     MeasuredData
         The average of all the MeasuredDatas, with the uncertainty propagated
     """
-    avg = MeasuredData(0, 0)
-
-    for point in measurements:
-        avg += point
-
-    return avg / len(measurements)
+    n = len(measurements)
+    average = sum([float(x) for x in measurements]) / n
+    standard_deviation = math.sqrt(
+        (1 / (n - 1)) * sum(([(float(x) - average) ** 2 for x in measurements]))
+    )
+    return MeasuredData(average, 0, standard_deviation)

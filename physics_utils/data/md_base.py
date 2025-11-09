@@ -190,10 +190,21 @@ class MeasuredDataBase:
 
         return self._new(other / self.value, error(self.reading_error), error(self.standard_error))
 
-    def __pow__(self, other: int) -> Self:
+    def __pow__(self, other) -> Self:
         """
         Support for taking a MeasuredData to some integer power
         """
+        if isinstance(other, MeasuredDataBase):
+            def error(sx, sy):
+                x, y = self.value, other.value
+                return math.sqrt((y * x ** (y - 1)) ** 2 * sx ** 2 + (x ** y * math.log(y)) ** 2 * sy ** 2)
+
+            return self._new(
+                self.value ** other.value,
+                error(self.reading_error, other.reading_error),
+                error(self.standard_error, other.standard_error)
+            )
+
         error = lambda s: abs(other * self.value ** (other - 1) * s)
 
         return self._new(
@@ -272,7 +283,18 @@ class MeasuredDataBase:
             self.standard_error
         )
 
+    def __eq__(self, other) -> bool:
+        if isinstance(other, MeasuredDataBase):
+            return self.value == other.value
+        return self.value == other
 
+    def __gt__(self, other) -> bool:
+        if isinstance(other, MeasuredDataBase):
+            return self.value > other.value
+        return self.value > other
+
+    def __ge__(self, other) -> bool:
+        return self == other or self > other
 
     def __str__(self) -> str:
         """
@@ -288,6 +310,9 @@ class MeasuredDataBase:
         >>> str(MeasuredDataBase(1234.567, 543, 0))
         '1200.0±500.'
         """
+        if self.error() == 0:
+            return str(self.value)
+
         err = np.format_float_positional(self.error(), precision=1, fractional=False)
 
         decimal_num = 0
@@ -303,11 +328,17 @@ class MeasuredDataBase:
 
         return str(round(self.value, decimal_num)) + "±" + err
 
+    def __repr__(self) -> str:
+        return self.__str__()
+
     def latex(self) -> str:
         """
         Converts the MeasuredData into a string representation, as described in the __str__ method, but uses the LaTeX
         symbol for ±, and wraps the value in $$
         """
+        if self.error() == 0:
+            return str(self.value)
+
         parts = str(self).split("±")
 
         return "${} \\pm {}$".format(parts[0], parts[1])
