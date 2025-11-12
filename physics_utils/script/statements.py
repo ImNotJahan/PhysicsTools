@@ -7,6 +7,9 @@ from importlib import import_module
 def assignment(interpreter, variable: str, value) -> None:
     interpreter.env.add(variable, value)
 
+    if isinstance(value, MeasuredData):
+        value.label = variable
+
 
 def uncertainty_assignment(interpreter, variable: str, uncertainty: MeasuredData) -> None:
     interpreter.env.get(variable).reading_error = uncertainty.value

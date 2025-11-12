@@ -78,7 +78,7 @@ class SimpleGraph:
             fmt=".", capsize=2, label=self.y_label
         )
 
-    def best_fit(self) -> tuple:
+    def best_fit(self, return_as_md=False) -> tuple:
         """
         Creates a linear line of best fit on the graph, for the last set x- and y-axes
 
@@ -93,10 +93,16 @@ class SimpleGraph:
         fitted_y = [linearfit[1] + i * linearfit[0] for i in self.x_data]
         self.axes.plot(self.x_data, fitted_y, label="Line of Best Fit")
 
-        return (
-            (linearfit[0], np.sqrt(covariance_matrix[0][0])),
-            (linearfit[1], np.sqrt(covariance_matrix[1][1]))
-        )
+        if return_as_md:
+            return (
+                MeasuredData(float(linearfit[0]), float(np.sqrt(covariance_matrix[0][0]))),
+                MeasuredData(float(linearfit[1]), float(np.sqrt(covariance_matrix[1][1])))
+            )
+        else:
+            return (
+                (linearfit[0], np.sqrt(covariance_matrix[0][0])),
+                (linearfit[1], np.sqrt(covariance_matrix[1][1]))
+            )
 
     def put_labels(self) -> None:
         """

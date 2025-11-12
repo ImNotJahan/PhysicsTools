@@ -29,7 +29,7 @@ napoleon_google_docstring = True
 project = 'physics_utils'
 copyright = '2025, Jahan Rashidi'
 author = 'Jahan Rashidi'
-release = '0.1.0'
+release = '0.3.1'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

@@ -331,7 +331,7 @@ class MeasuredDataBase:
     def __repr__(self) -> str:
         return self.__str__()
 
-    def latex(self) -> str:
+    def latex(self, wrap=True) -> str:
         """
         Converts the MeasuredData into a string representation, as described in the __str__ method, but uses the LaTeX
         symbol for ±, and wraps the value in $$
@@ -340,9 +340,11 @@ class MeasuredDataBase:
             return str(self.value)
 
         parts = str(self).split("±")
+        formatted = "{} \\pm {}".format(parts[0], parts[1])
 
-        return "${} \\pm {}$".format(parts[0], parts[1])
-
+        if wrap:
+            return "${}$".format(formatted)
+        return formatted
     @staticmethod
     def from_set(measurements: Iterable[float], reading_error: float, standard_error=0.0) -> list[Self]:
         """
@@ -364,4 +366,3 @@ class MeasuredDataBase:
             and the reading_error and standard_error attributes matching that which were passed as parameters
         """
         return [MeasuredDataBase(x, reading_error, standard_error) for x in measurements]
-

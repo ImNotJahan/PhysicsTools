@@ -19,6 +19,7 @@ class StepsExtension(md):
     """
     value_step = uncertainty_step = step_variables = None
     values_wrapped = uncertainty_wrapped = has_steps = False
+    label = None
 
     def _new(self, measurement: float, reading_error: float, standard_error=0.0,
              value_step=None, uncertainty_step=None, step_variables=None,
@@ -213,7 +214,24 @@ class StepsExtension(md):
 
     # from here on out, we have some latex_extension unique methods for MeasuredData
 
-    def recent_step(self, value_step, plug_in_vars=True, trunc_nums=True) -> str:
+    def recent_step(self, value_step : bool, plug_in_vars=True, trunc_nums=True) -> str:
+        """
+        Returns the most recent step done on this MeasuredData in LaTeX
+
+        Parameters
+        ----------
+        value_step : bool
+            If true, returns the step for calculating the value, else returns the step for calculating uncertainty.
+        plug_in_vars : bool
+            Should values be plugged into the generated equations
+        trunc_nums : bool
+            Should plugged in values be truncated
+
+        Returns
+        -------
+        str
+            The step in LaTeX as a string
+        """
         if value_step:
             step = self.value_step
         else:
@@ -240,6 +258,25 @@ class StepsExtension(md):
         return at_format(step, vals)
 
     def all_steps_sequential(self, plug_in_vars=True, trunc_nums=True) -> tuple[list[str], list[str], list]:
+        """
+        Returns the steps to calculate this MeasuredData as lists of steps written in LaTeX
+
+        Parameters
+        ----------
+        self : MeasuredData
+            The MeasuredData object
+        plug_in_vars : bool
+            Should values be plugged into the generated equations
+        trunc_nums : bool
+            Should plugged in values be truncated
+
+        Returns
+        -------
+        tuple[list[str], list[str], list]
+            Returns a tuple, with the first element being a list of the steps for calculating the value, the second
+            element being a list of steps for calculating the uncertainty, and the third element a list containing
+            the value of the MeasuredData object at each of these steps.
+        """
         value_steps       = []
         uncertainty_steps = []
         data_points       = []
@@ -261,6 +298,24 @@ class StepsExtension(md):
         return value_steps[::-1], uncertainty_steps[::-1], data_points
 
     def all_steps_composite(self, plug_in_vars=True, trunc_nums=True) -> tuple[str, str]:
+        """
+        Returns the steps to calculate this MeasuredData as composed equations written in LaTeX
+
+        Parameters
+        ----------
+        self : MeasuredData
+            The MeasuredData object
+        plug_in_vars : bool
+            Should values be plugged into the generated equations
+        trunc_nums : bool
+            Should plugged in values be truncated
+
+        Returns
+        -------
+        tuple[str, str]
+            Returns a tuple, with the first element being the equation to calculate the value, and the second element
+            being an equation to calculate the uncertainty.
+        """
         seen_variables = {}
 
         def expand_eqs(dp: StepsExtension) -> tuple[object, object]:
@@ -279,7 +334,7 @@ class StepsExtension(md):
                         return dp.value, dp.error()
                 else:
                     if id(dp) not in seen_variables:
-                        seen_variables[id(dp)] = var_letters[len(seen_variables)]
+                        seen_variables[id(dp)] = var_letters[len(seen_variables)] if dp.label is None else dp.label
 
                     return (VariableLabel(" {} ".format(seen_variables[id(dp)])),
                             VariableLabel(" s_{} ".format(seen_variables[id(dp)])))
