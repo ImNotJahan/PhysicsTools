@@ -26,6 +26,7 @@ ctrl:   'break'
 expr:   '#' expr
     |   expr '[' expr ']'
     |   expr '`'? '(' args ')'
+    |   expr stars '(' pargs ')'
     |   expr '^' expr
     |   expr ('*'|'/') expr
     |   expr ('+'|'-') expr
@@ -48,6 +49,9 @@ package: SYMBOL ('.' SYMBOL)* ;
 list:    '[' (expr (',' expr)*)? ']' ;
 
 args:    (expr (',' expr)*)? ;
+parg:    (stars expr) ;
+pargs:   (parg (',' parg)*) ;
+stars:   ('*'*) ;
 params:  (var (',' var)*)? ;
 
 num:    FLOAT
