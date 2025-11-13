@@ -13,5 +13,6 @@ used with other modules for worryfree error bars on graphs and such.
     data
     graph
     table
+    scripting
     api/index
 
