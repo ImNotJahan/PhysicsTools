@@ -3,6 +3,7 @@ from physics_utils import MeasuredData
 from .util import *
 from .expressions import anonymous_fn
 from importlib import import_module
+from .control import Break, Continue
 
 def assignment(interpreter, variable: str, value) -> None:
     interpreter.env.add(variable, value)
@@ -75,14 +76,24 @@ def handle_for(interpreter, context) -> None:
             # pass i into current environment as var
             interpreter.env.add(var_name, MeasuredData(i, 0))
 
-            get_eval(interpreter, context, 7)
+            try:
+                get_eval(interpreter, context, 7)
+            except Continue:
+                pass
+            except Break:
+                break
 
     elif for_op == "in":
         # for x in list
         for x in get_eval(interpreter, context, 3):
             interpreter.env.add(var_name, x)
 
-            get_eval(interpreter, context, 5)
+            try:
+                get_eval(interpreter, context, 5)
+            except Continue:
+                pass
+            except Break:
+                break
 
     else:
         raise RuntimeError("Unknown for operator \"{}\"".format(for_op))
@@ -92,7 +103,12 @@ def handle_while(interpreter, context) -> None:
     # while expr loop block end loop
 
     while get_eval(interpreter, context, 1):
-        get_eval(interpreter, context, 3)
+        try:
+            get_eval(interpreter, context, 3)
+        except Continue:
+            pass
+        except Break:
+            break
 
 
 def handle_define(interpreter, context) -> None:
