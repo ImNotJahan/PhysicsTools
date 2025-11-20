@@ -1,6 +1,7 @@
 from .measureddata import MeasuredData
 import pandas as pd
 import numpy as np
+from numpy import std
 
 # from here on out we have some utility functions
 def csv_to_numpy(file_name: str, rotate=False) -> np.ndarray:
@@ -18,7 +19,7 @@ def remove_nan_2d(data_points: np.ndarray) -> list:
 
 def avg_from_set(measurements: list[float], reading_error: float) -> MeasuredData:
     """
-    Averages a list of floats all having the same error
+    Averages a list of floats all having the same reading error
 
     Parameters
     ----------
@@ -34,10 +35,8 @@ def avg_from_set(measurements: list[float], reading_error: float) -> MeasuredDat
     """
     n = len(measurements)
     average = sum(measurements) / n
-    standard_deviation = math.sqrt(
-        (1 / (n - 1)) * sum(([(x - average)**2 for x in measurements]))
-    )
-    return MeasuredData(average, reading_error, standard_deviation / math.sqrt(n))
+    standard_deviation = float(std(measurements))
+    return MeasuredData(average, reading_error, standard_deviation)
 
 def avg_measured_datas(measurements: list[MeasuredData]) -> MeasuredData:
     import math
@@ -52,11 +51,12 @@ def avg_measured_datas(measurements: list[MeasuredData]) -> MeasuredData:
     Returns
     -------
     MeasuredData
-        The average of all the MeasuredDatas, with the uncertainty propagated
+        The average of all the MeasuredDatas, with the standard error being
+        the standard deviation.
     """
-    n = len(measurements)
-    average = sum([float(x) for x in measurements]) / n
-    standard_deviation = math.sqrt(
-        (1 / (n - 1)) * sum(([(float(x) - average) ** 2 for x in measurements]))
-    )
+    values = [float(x) for x in measurements]
+
+    n = len(values)
+    average = sum(values) / n
+    standard_deviation = float(std(values))
     return MeasuredData(average, 0, standard_deviation)

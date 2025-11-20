@@ -1,4 +1,4 @@
-from physics_utils.data import math
+from physics_utils.data import math, avg_measured_datas
 
 from .builtin import steps, std
 
@@ -23,7 +23,7 @@ class Environment:
 
 variables = {
     "sin": math.sin, "cos": math.cos, "tan": math.tan, "arcsin": math.asin, "arctan": math.atan,
-    "exit": exit, "print": print, "steps": steps, "std": std,
+    "exit": exit, "print": print, "steps": steps, "std": std, "avg": avg_measured_datas,
     "true": True, "false": False, "nil": None
 }
 
