@@ -54,11 +54,7 @@ pargs:   (parg (',' parg)*) ;
 stars:   ('*'*) ;
 params:  (var (',' var)*)? ;
 
-num:    FLOAT
-   |    FLOAT '~' FLOAT
-   |    FLOAT SYMBOL
-   |    FLOAT '~' FLOAT SYMBOL
-   ;
+num:     SCI_NUM ('~' SCI_NUM)? SYMBOL? ;
 
 str:    STRING ;
 
@@ -67,10 +63,13 @@ var:    SYMBOL ;
 NEWLINE : [\r\n]+ -> skip;
 SPACE   : [ \t]+ -> skip;
 
-FLOAT   : '-'? DIGIT+ '.' DIGIT*
-        | '-'? DIGIT+
+SCI_NUM : FLOAT MAG? ;
+
+FLOAT   : '-'? DIGIT+ ('.' DIGIT*)?
         | '-'? '.' DIGIT+
         ;
+
+MAG     : '*' '10' '^' ('-'? DIGIT+) ;
 
 SYMBOL  : (LOWER|UPPER|'_') (LOWER|UPPER|'_'|DIGIT)* ;
 STRING  : '"' ~('"')* '"' ;
