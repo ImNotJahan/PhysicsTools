@@ -63,6 +63,9 @@ var:    SYMBOL ;
 NEWLINE : [\r\n]+ -> skip;
 SPACE   : [ \t]+ -> skip;
 
+MLC     : '/*' .*? '*/' -> skip ;
+SLC     : '//' .*? NEWLINE -> skip ;
+
 SCI_NUM : FLOAT MAG? ;
 
 FLOAT   : '-'? DIGIT+ ('.' DIGIT*)?
