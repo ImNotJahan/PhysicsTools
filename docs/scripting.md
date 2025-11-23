@@ -14,7 +14,7 @@ define calc_ke(mass, velocity) as
     return mass * velocity ^ 2
 end calc_ke
 
-kinetic_energies := calc_ke*(mass, *velocities)
+kinetic_energies := calc_ke`(mass, *velocities)
 
 print(kinetic_energies)
 "This would then output the following:"
@@ -71,12 +71,12 @@ There are a few ways to call a function, which will all be gone over here.
 #### Normal calls
 To do a standard function call, just write the function's name followed by any arguments in parenthesis, seperated by commas, like so: `some_function(3, 10)`.
 
-#### Star notation
+#### Prime & star notation
 Any function which does some operation on data can instead do that operation on collections of data, or collections of collections of collections ... of data, using star notation.
 
 For example, if you had a function which calculated a number, you could instead have it calculate a bunch of numbers. When doing so, at least one of the arguments must also be a collection of the standard input, to the same depth as the expected output. The other arguments, however, can be collections up to or less than the depth of the output, or not be collections at all, and just the standard input. 
 
-To do this, you put a stars `*` after the function name, equaling the depth of output you would like, and you also put stars before any argument, equaling the depth of input. 
+To do this, you put a backtick (`` ` ``) after the function name, and then put stars (`*`) before any argument, equaling the depth of input. 
 
 This all can sound a bit arcane, so here are some examples:
 
@@ -90,26 +90,22 @@ end calc_momentum
 masses := [100, 120, 50]
 velocities := [5, 4, 7.5]
 
-calc_momentum*(*masses, *velocities) "would return the following: [500, 480, 375]"
+calc_momentum`(*masses, *velocities) "would return the following: [500, 480, 375]"
 
 "If, instead, I gathered a bunch of velocities in various trials for an object"
 "of constant mass, I could calculate it's momentum for each run like so:"
 mass := 70
 velocities := [10, 7, 11]
 
-calc_momentum*(mass, *velocities) "would return [700, 490, 770]"
+calc_momentum`(mass, *velocities) "would return [700, 490, 770]"
 
 "If I gathered multiple runs for multiple objects of differing masses,"
 "I could calculate the momentum for all of them also:"
 masses := [3, 4, 5]
 velocities := [[5, 10, 3], [2, 10], [12, 7, 9, 15]]
 
-calc_momentum**(*masses, **velocities) "returns [[15, 30, 9], [8, 40], [60, 35, 45, 75]]"
+calc_momentum`(*masses, **velocities) "returns [[15, 30, 9], [8, 40], [60, 35, 45, 75]]"
 ```
-
-#### Prime notation
-Prime notation is the less useful cousin of star notation, but which is shorter in some scenarios. It is written like so: ``fn`(arg1, arg2, ...)``,
-and is equivalent to writing `fn*(*arg1, *arg2, ...)`.
 
 ### Strings
 Strings can be made by wrapping any text around double quotation marks. Strings are also used as comments, and can be multiline comments as well,
@@ -344,3 +340,7 @@ Stops the interpreter.
 
 ### Standard deviation
 `std` can be used to find the standard deviation on elements in a list.
+
+### Averaging
+`avg` can be used to find the mean average of a list of data points, and returns the value
+with the uncertainty being the standard deviation between the elements.

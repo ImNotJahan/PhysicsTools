@@ -25,8 +25,8 @@ ctrl:   'break'
 
 expr:   '#' expr
     |   expr '[' expr ']'
-    |   expr '`'? '(' args ')'
-    |   expr stars '(' pargs ')'
+    |   expr '(' args ')'
+    |   expr '`' '(' pargs ')'
     |   expr '^' expr
     |   expr ('*'|'/') expr
     |   expr ('+'|'-') expr

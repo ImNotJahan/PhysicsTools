@@ -54,29 +54,14 @@ def anonymous_fn(interpreter, parameters, body):
 def handle_function_call(interpreter, context):
     fn = get_eval(interpreter, context, 0)
 
-    if get_str(context, 1) == "`":
-        # image call
-        args = get(context, 3)
-        args = [get_eval(interpreter, args, i) for i in range(0, count(args), 2)]
-        result = []
+    # normal call
+    args = get(context, 2)
+    args = [get_eval(interpreter, args, i) for i in range(0, count(args), 2)]
 
-        if len(args) > 0:
-            for i in range(len(args[0])):
-                curr_args = [x[i] for x in args]
-                result.append(fn(*curr_args))
-
-        return result
-    else:
-        # normal call
-        args = get(context, 2)
-        args = [get_eval(interpreter, args, i) for i in range(0, count(args), 2)]
-
-        return fn(*args)
+    return fn(*args)
 
 
 def handle_starred_function_call(interpreter, context):
-    return_stars = len(get_str(context, 1))
-
     fn = get_eval(interpreter, context, 0)
 
     pargs = get(context, 3)
@@ -84,9 +69,8 @@ def handle_starred_function_call(interpreter, context):
 
     arg_v = [get_eval(interpreter, parg, 1) for parg in pargs]
     arg_s = [len(get_str(parg, 0)) for parg in pargs]
-    
-    if max(arg_s) != return_stars:
-        raise RuntimeError("Return level must match highest input level")
+
+    return_stars = max(arg_s)
     
     model = arg_v[arg_s.index(return_stars)]
 
@@ -142,8 +126,6 @@ def handle_expression(interpreter, context):
     elif expression_len == 5:
         if get_str(context, 1) == "`":
             # var`(args)
-            return handle_function_call(interpreter, context)
-        elif isinstance(get(context, 1), ExprParser.StarsContext):
             return handle_starred_function_call(interpreter, context)
 
     elif expression_len == 2:

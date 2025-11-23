@@ -5,6 +5,9 @@
 # PhysicsTools
 This is a library for dealing with some tedious tasks for basic physics labs.
 
+Be warned that, as this project is still in heavy development, backwards compatability can be broken between 0.x.0 versions. This is
+avoided as much as possible, but make sure to watch out for it when updating your installation.
+
 ## Features
 * Automatic uncertainty propagation on basic arithmetic and trigonometric operations
 * Generated LaTeX steps of any calculations done with the `MeasuredData` class
