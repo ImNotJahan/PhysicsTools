@@ -6,7 +6,7 @@ block:  (stat|expr|ctrl)* ;
 
 stat:   var ':=' expr
     |   var ':~' expr
-    |   var '[' expr '] :=' expr
+    |   expr '[' expr ']' ':=' expr
     |   'if' expr 'then' block ('else if' expr 'then' block)* ('else' block)? 'end if'
     |   'while' expr 'loop' block 'end loop'
     |   'for' var 'in' expr 'loop' block 'end loop'

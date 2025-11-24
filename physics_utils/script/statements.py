@@ -166,10 +166,10 @@ def handle_statement(interpreter, context):
             # var := expr
             uncertainty_assignment(interpreter, get_str(context, 0), get_eval(interpreter, context, 2))
 
-    elif parts == 5:
-        if get_str(context, 3) == "] :=":
+    elif parts == 6:
+        if get_str(context, 4) == ":=":
             # list[index] := expr
-            list_assignment(interpreter, get_eval(interpreter, context, 0), get_eval(interpreter, context, 2), get_eval(interpreter, context, 4))
+            list_assignment(interpreter, get_eval(interpreter, context, 0), get_eval(interpreter, context, 2), get_eval(interpreter, context, 5))
 
     if keyword == "if":
         handle_if(interpreter, context)
