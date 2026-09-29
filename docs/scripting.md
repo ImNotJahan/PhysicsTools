@@ -339,8 +339,10 @@ Same as the normal python print. Outputs any arguments provided to it.
 Stops the interpreter.
 
 ### Standard deviation
-`std` can be used to find the standard deviation on elements in a list.
+`std` can be used to find the sample standard deviation (using n - 1) of the elements in a list.
 
 ### Averaging
-`avg` can be used to find the mean average of a list of data points, and returns the value
-with the uncertainty being the standard deviation between the elements.
+`avg` can be used to find the mean average of a list of data points. The returned value has a
+standard error equal to the sample standard deviation (n - 1) of the elements divided by the square
+root of the number of elements, and a reading error equal to the individual reading errors added in
+quadrature and divided by the number of elements.

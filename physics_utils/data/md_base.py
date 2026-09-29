@@ -110,14 +110,9 @@ class MeasuredDataBase:
         Support for multiplication with a MeasuredData as the left operand
         """
         if isinstance(other, MeasuredDataBase):
+            # partial derivatives (dz/dx = y, dz/dy = x), which stay correct when a value is zero
             def error(sx, sy) -> float:
-                return (
-                            (self.value * other.value) *
-                            math.sqrt (
-                                safe_div(sx, self.value) ** 2 +
-                                safe_div(sy, other.value) ** 2
-                            )
-                        )
+                return math.sqrt((other.value * sx) ** 2 + (self.value * sy) ** 2)
 
             return self._new(
                 self.value * other.value,
@@ -125,7 +120,7 @@ class MeasuredDataBase:
                 error(self.standard_error, other.standard_error)
             )
 
-        error = lambda s: (self.value * other) * safe_div(s, self.value)
+        error = lambda s: abs(other * s)
 
         return self._new(self.value * other, error(self.reading_error), error(self.standard_error))
 
@@ -141,14 +136,12 @@ class MeasuredDataBase:
         Support for division with a MeasuredData as the left operand
         """
         if isinstance(other, MeasuredDataBase):
+            # dz/dx = 1/y, dz/dy = -x/y^2
             def error(sx, sy) -> float:
-                return (
-                            (self.value / other.value) *
-                            math.sqrt (
-                                (sx / self.value) ** 2 +
-                                (sy / other.value) ** 2
-                            )
-                        )
+                return math.sqrt(
+                    (sx / other.value) ** 2 +
+                    (self.value * sy / other.value ** 2) ** 2
+                )
 
             return self._new(
                 self.value / other.value,
@@ -156,7 +149,7 @@ class MeasuredDataBase:
                 error(self.standard_error, other.standard_error)
             )
 
-        error = lambda s: (self.value / other) * safe_div(s, self.value)
+        error = lambda s: abs(s / other)
 
         return self._new(self.value / other, error(self.reading_error), error(self.standard_error))
 
@@ -172,12 +165,9 @@ class MeasuredDataBase:
         """
         if isinstance(other, MeasuredDataBase):
             def error(sx, sy) -> float:
-                return (
-                        (other.value / self.value) *
-                        math.sqrt(
-                            (sx / other.value) ** 2 +
-                            (sy / self.value) ** 2
-                        )
+                return math.sqrt(
+                    (sx / self.value) ** 2 +
+                    (other.value * sy / self.value ** 2) ** 2
                 )
 
             return self._new(
@@ -186,7 +176,7 @@ class MeasuredDataBase:
                 error(other.standard_error, self.standard_error)
             )
 
-        error = lambda s: (other / self.value) * safe_div(s, self.value)
+        error = lambda s: abs(other * s / self.value ** 2)
 
         return self._new(other / self.value, error(self.reading_error), error(self.standard_error))
 
@@ -197,7 +187,10 @@ class MeasuredDataBase:
         if isinstance(other, MeasuredDataBase):
             def error(sx, sy):
                 x, y = self.value, other.value
-                return math.sqrt((y * x ** (y - 1)) ** 2 * sx ** 2 + (x ** y * math.log(y)) ** 2 * sy ** 2)
+                # dz/dx = y x^(y-1), dz/dy = x^y ln(x); ln(x) is only needed if y is uncertain
+                base_term = (y * x ** (y - 1) * sx) ** 2
+                exponent_term = 0 if sy == 0 else (x ** y * math.log(x) * sy) ** 2
+                return math.sqrt(base_term + exponent_term)
 
             return self._new(
                 self.value ** other.value,
@@ -241,13 +234,22 @@ class MeasuredDataBase:
         """
         Takes the result of tan(x) on a MeasuredData with the MeasuredData treated as radians
         """
-        return self.sine() / self.cosine()
+        # sine() / cosine() would treat the two as independent, but they share the same input, so use
+        # d(tan x) = s / cos^2(x) directly
+        cos = math.cos(self.value)
+        error = lambda s: abs(s / cos ** 2)
+
+        return self._new(
+            math.tan(self.value),
+            error(self.reading_error),
+            error(self.standard_error)
+        )
 
     def arctan(self) -> Self:
         """
         Takes the result of arctan(x) on a MeasuredData with the MeasuredData treated as radians
         """
-        error = lambda s: s / (1 + self.value ** 2)
+        error = lambda s: abs(s / (1 + self.value ** 2))
 
         return self._new(
             math.atan(self.value),
@@ -259,7 +261,7 @@ class MeasuredDataBase:
         """
         Takes the result of arcsin(x) on a MeasuredData with the MeasuredData treated as radians
         """
-        error = lambda s: s / math.sqrt(1 - self.value ** 2)
+        error = lambda s: abs(s / math.sqrt(1 - self.value ** 2))
 
         return self._new(
             math.asin(self.value),
@@ -288,10 +290,22 @@ class MeasuredDataBase:
             return self.value == other.value
         return self.value == other
 
+    def __hash__(self) -> int:
+        # __eq__ compares values only, so the hash must too
+        return hash(self.value)
+
     def __gt__(self, other) -> bool:
         if isinstance(other, MeasuredDataBase):
             return self.value > other.value
         return self.value > other
+
+    def __lt__(self, other) -> bool:
+        if isinstance(other, MeasuredDataBase):
+            return self.value < other.value
+        return self.value < other
+
+    def __le__(self, other) -> bool:
+        return self == other or self < other
 
     def __ge__(self, other) -> bool:
         return self == other or self > other
@@ -345,8 +359,9 @@ class MeasuredDataBase:
         if wrap:
             return "${}$".format(formatted)
         return formatted
-    @staticmethod
-    def from_set(measurements: Iterable[float], reading_error: float, standard_error=0.0) -> list[Self]:
+
+    @classmethod
+    def from_set(cls, measurements: Iterable[float], reading_error: float, standard_error=0.0) -> list[Self]:
         """
         Takes a bunch of measurements that all have the same error, and converts them all into MeasuredDatas
 
@@ -365,4 +380,4 @@ class MeasuredDataBase:
             A list full of MeasuredDatas, with each one corresponding to an element from the measurements parameter,
             and the reading_error and standard_error attributes matching that which were passed as parameters
         """
-        return [MeasuredDataBase(x, reading_error, standard_error) for x in measurements]
+        return [cls(x, reading_error, standard_error) for x in measurements]

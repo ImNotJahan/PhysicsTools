@@ -28,4 +28,4 @@ def asin(x: float | MeasuredData) -> float | MeasuredData:
 def atan(x: float | MeasuredData) -> float | MeasuredData:
     if isinstance(x, MeasuredData):
         return x.arctan()
-    return math.asin(x)
+    return math.atan(x)

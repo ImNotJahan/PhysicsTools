@@ -1,3 +1,4 @@
+import math
 from .measureddata import MeasuredData
 import pandas as pd
 import numpy as np
@@ -31,15 +32,15 @@ def avg_from_set(measurements: list[float], reading_error: float) -> MeasuredDat
     Returns
     -------
     MeasuredData
-        The average of all the measurements, with the uncertainty propagated
+        The mean of the measurements. The reading error is kept as given, since the readings may share a
+        systematic offset. The standard error is the sample standard deviation (n - 1) divided by sqrt(n).
     """
     n = len(measurements)
     average = sum(measurements) / n
-    standard_deviation = float(std(measurements))
-    return MeasuredData(average, reading_error, standard_deviation)
+    standard_error = float(std(measurements, ddof=1) / math.sqrt(n)) if n > 1 else 0.0
+    return MeasuredData(average, reading_error, standard_error)
 
 def avg_measured_datas(measurements: list[MeasuredData]) -> MeasuredData:
-    import math
     """
     Averages a list of MeasuredDatas
 
@@ -51,12 +52,13 @@ def avg_measured_datas(measurements: list[MeasuredData]) -> MeasuredData:
     Returns
     -------
     MeasuredData
-        The average of all the MeasuredDatas, with the standard error being
-        the standard deviation.
+        The mean of the values. The reading error is the individual reading errors added in quadrature and divided
+        by n, and the standard error is the sample standard deviation (n - 1) divided by sqrt(n).
     """
     values = [float(x) for x in measurements]
 
     n = len(values)
     average = sum(values) / n
-    standard_deviation = float(std(values))
-    return MeasuredData(average, 0, standard_deviation)
+    reading_error = math.sqrt(sum(x.reading_error ** 2 for x in measurements)) / n
+    standard_error = float(std(values, ddof=1) / math.sqrt(n)) if n > 1 else 0.0
+    return MeasuredData(average, reading_error, standard_error)

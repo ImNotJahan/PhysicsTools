@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
-addopts = "-v --cov=physics_tools --cov-report=term-missing"
+addopts = "-v --cov=physics_utils --cov-report=term-missing"
 
 [project]
 name = "physics-utils"
