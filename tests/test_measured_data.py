@@ -179,5 +179,51 @@ class TestAveraging(unittest.TestCase):
         self.assertEqual(avg_from_set([5.0], 0.1).standard_error, 0.0)
 
 
+class TestFollowUps(unittest.TestCase):
+
+    def test_tangent_error(self):
+        from physics_utils.data import math as pm
+        result = pm.tan(MeasuredData(0.5, 0.01, 0.02))
+        self.assertAlmostEqual(result.value, math.tan(0.5))
+        self.assertAlmostEqual(result.reading_error, 0.01 / math.cos(0.5) ** 2)
+        self.assertAlmostEqual(result.standard_error, 0.02 / math.cos(0.5) ** 2)
+
+    def test_tangent_error_is_positive_for_negative_angle(self):
+        self.assertGreater(MeasuredData(-0.5, 0.01).tangent().reading_error, 0)
+
+    def test_from_set(self):
+        result = MeasuredData.from_set([1, 2, 3], 0.1, 0.2)
+        self.assertEqual(len(result), 3)
+        self.assertTrue(all(isinstance(x, MeasuredData) for x in result))
+        self.assertEqual([x.value for x in result], [1, 2, 3])
+        self.assertTrue(all(x.reading_error == 0.1 and x.standard_error == 0.2 for x in result))
+
+    def test_comparisons_with_numbers(self):
+        a = MeasuredData(1, 0.1)
+        self.assertTrue(a < 2)
+        self.assertTrue(a <= 1)
+        self.assertTrue(a <= 2)
+        self.assertFalse(a < 1)
+        self.assertTrue(2 > a)
+        self.assertTrue(1 >= a)
+        self.assertTrue(0 < a)
+        self.assertFalse(3 <= a)
+
+    def test_comparisons_between_measured_datas(self):
+        a, b = MeasuredData(1, 0.1), MeasuredData(2, 0.1)
+        self.assertTrue(a < b)
+        self.assertTrue(a <= b)
+        self.assertTrue(b > a)
+        self.assertTrue(b >= a)
+        self.assertTrue(a <= MeasuredData(1, 0.5))
+        self.assertFalse(b <= a)
+
+    def test_script_std_is_sample_std(self):
+        from physics_utils.script.builtin import std
+        data = [MeasuredData(v, 0.1) for v in (1.0, 2.0, 3.0, 4.0)]
+        self.assertAlmostEqual(std(data).value, 1.2909944487358056)
+        self.assertEqual(std([MeasuredData(5.0, 0.1)]).value, 0.0)
+
+
 if __name__ == "__main__":
     unittest.main()

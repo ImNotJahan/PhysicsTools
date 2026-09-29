@@ -25,7 +25,9 @@ def steps(x: MeasuredData, *options) -> str:
         return '\n'.join(x.all_steps_sequential(plug_in, trunc)[int(calc == "uncertainty")])
 
 def std(data: list[MeasuredData]) -> MeasuredData:
+    values = list(map(float, data))
+    # sample standard deviation (n - 1), matching the averaging helpers
     return MeasuredData(
-        float(numpy.std(list(map(float, data)))),
+        float(numpy.std(values, ddof=1)) if len(values) > 1 else 0.0,
         0
     )

@@ -43,3 +43,9 @@ The data module also provides methods for quickly averaging a bunch of
 measurements from the same device that have the same reading error,
 using the `avg_from_set` function; and for averaging a list of `MeasuredData`,
 using the `avg_measured_datas` function.
+
+Both functions return the mean as the value, and set the standard error to the sample
+standard deviation (n - 1) divided by the square root of the number of measurements.
+`avg_from_set` keeps the reading error you give it, since readings from the same device may
+share a systematic offset. `avg_measured_datas` combines the individual reading errors in
+quadrature and divides by the number of measurements.

@@ -234,7 +234,16 @@ class MeasuredDataBase:
         """
         Takes the result of tan(x) on a MeasuredData with the MeasuredData treated as radians
         """
-        return self.sine() / self.cosine()
+        # sine() / cosine() would treat the two as independent, but they share the same input, so use
+        # d(tan x) = s / cos^2(x) directly
+        cos = math.cos(self.value)
+        error = lambda s: abs(s / cos ** 2)
+
+        return self._new(
+            math.tan(self.value),
+            error(self.reading_error),
+            error(self.standard_error)
+        )
 
     def arctan(self) -> Self:
         """
@@ -290,6 +299,14 @@ class MeasuredDataBase:
             return self.value > other.value
         return self.value > other
 
+    def __lt__(self, other) -> bool:
+        if isinstance(other, MeasuredDataBase):
+            return self.value < other.value
+        return self.value < other
+
+    def __le__(self, other) -> bool:
+        return self == other or self < other
+
     def __ge__(self, other) -> bool:
         return self == other or self > other
 
@@ -342,8 +359,9 @@ class MeasuredDataBase:
         if wrap:
             return "${}$".format(formatted)
         return formatted
-    @staticmethod
-    def from_set(measurements: Iterable[float], reading_error: float, standard_error=0.0) -> list[Self]:
+
+    @classmethod
+    def from_set(cls, measurements: Iterable[float], reading_error: float, standard_error=0.0) -> list[Self]:
         """
         Takes a bunch of measurements that all have the same error, and converts them all into MeasuredDatas
 
@@ -362,4 +380,4 @@ class MeasuredDataBase:
             A list full of MeasuredDatas, with each one corresponding to an element from the measurements parameter,
             and the reading_error and standard_error attributes matching that which were passed as parameters
         """
-        return [MeasuredDataBase(x, reading_error, standard_error) for x in measurements]
+        return [cls(x, reading_error, standard_error) for x in measurements]
