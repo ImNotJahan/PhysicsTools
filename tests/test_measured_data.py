@@ -113,3 +113,71 @@ class TestMeasuredData(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class TestEdgeCases(unittest.TestCase):
+
+    def test_atan_float(self):
+        from physics_utils.data import math as pm
+        self.assertAlmostEqual(pm.atan(1.0), math.pi / 4)
+
+    def test_pow_uncertain_exponent(self):
+        result = MeasuredData(2, 0) ** MeasuredData(3, 0.1)
+        self.assertAlmostEqual(result.reading_error, 8 * math.log(2) * 0.1)
+
+    def test_pow_both_uncertain(self):
+        result = MeasuredData(2, 0.1) ** MeasuredData(3, 0.1)
+        expected = math.sqrt((3 * 2 ** 2 * 0.1) ** 2 + (8 * math.log(2) * 0.1) ** 2)
+        self.assertAlmostEqual(result.reading_error, expected)
+
+    def test_mul_zero_value_keeps_error(self):
+        self.assertAlmostEqual((MeasuredData(0, 0.1) * 5).reading_error, 0.5)
+        self.assertAlmostEqual((MeasuredData(0, 0.1) * MeasuredData(3, 0.1)).reading_error, 0.3)
+
+    def test_div_zero_numerator(self):
+        result = MeasuredData(0, 0.1) / MeasuredData(3, 0.1)
+        self.assertEqual(result.value, 0)
+        self.assertAlmostEqual(result.reading_error, 0.1 / 3)
+
+    def test_div_by_zero_still_raises(self):
+        with self.assertRaises(ZeroDivisionError):
+            MeasuredData(2, 0.1) / MeasuredData(0, 0.1)
+
+    def test_negative_scalar_error_is_positive(self):
+        self.assertAlmostEqual((MeasuredData(4, 0.5) * -2).reading_error, 1.0)
+        self.assertAlmostEqual((MeasuredData(4, 0.5) / -2).reading_error, 0.25)
+        self.assertAlmostEqual((2 / MeasuredData(-4, 0.5)).reading_error, 2 * 0.5 / 16)
+
+    def test_mul_matches_relative_form(self):
+        a, b = MeasuredData(10.0, 0.5), MeasuredData(2.0, 0.1)
+        expected = 20 * math.sqrt((0.5 / 10) ** 2 + (0.1 / 2) ** 2)
+        self.assertAlmostEqual((a * b).reading_error, expected)
+        self.assertAlmostEqual((a / b).reading_error, 5 * math.sqrt((0.5 / 10) ** 2 + (0.1 / 2) ** 2))
+
+    def test_hashable(self):
+        self.assertEqual(len({MeasuredData(1, 0.1), MeasuredData(1, 0.2)}), 1)
+
+
+class TestAveraging(unittest.TestCase):
+
+    def test_avg_from_set_standard_error(self):
+        from physics_utils.data import avg_from_set
+        result = avg_from_set([1.0, 2.0, 3.0, 4.0], 0.1)
+        self.assertAlmostEqual(result.value, 2.5)
+        self.assertAlmostEqual(result.standard_error, 1.2909944487358056 / 2)
+        self.assertEqual(result.reading_error, 0.1)
+
+    def test_avg_measured_datas(self):
+        from physics_utils.data import avg_measured_datas
+        data = [MeasuredData(v, 0.3) for v in (1.0, 2.0, 3.0, 4.0)]
+        result = avg_measured_datas(data)
+        self.assertAlmostEqual(result.reading_error, 0.3 / 2)
+        self.assertAlmostEqual(result.standard_error, 1.2909944487358056 / 2)
+
+    def test_single_measurement(self):
+        from physics_utils.data import avg_from_set
+        self.assertEqual(avg_from_set([5.0], 0.1).standard_error, 0.0)
+
+
+if __name__ == "__main__":
+    unittest.main()

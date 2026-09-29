@@ -80,7 +80,7 @@ class StepsExtension(md):
             result.reading_error,
             result.standard_error,
             r"@x@\cdot@y@",
-            r"@x@\cdot@y@\sqrt{\frac{@s_x@}{@x@}^2+\frac{@s_y@}{@y@}^2}" if isinstance(other, md) else
+            r"\sqrt{\left(@y@\cdot@s_x@\right)^2+\left(@x@\cdot@s_y@\right)^2}" if isinstance(other, md) else
             r"@s_x@\cdot@y@",
             [self, other],
             False,
@@ -93,7 +93,7 @@ class StepsExtension(md):
             result.reading_error,
             result.standard_error,
             r"@y@\cdot@x@",
-            r"@x@\cdot@y@\sqrt{\frac{@s_y@}{@y@}^2+\frac{@s_x@}{@x@}^2}" if isinstance(other, md) else
+            r"\sqrt{\left(@y@\cdot@s_x@\right)^2+\left(@x@\cdot@s_y@\right)^2}" if isinstance(other, md) else
             r"@s_x@\cdot@y@",
             [self, other],
             False,
@@ -106,7 +106,7 @@ class StepsExtension(md):
             result.reading_error,
             result.standard_error,
             r"\frac{@x@}{@y@}",
-            r"@x@\cdot@y@\sqrt{\frac{@s_x@}{@x@}^2+\frac{@s_y@}{@y@}^2}" if isinstance(other, md) else
+            r"\sqrt{\left(\frac{@s_x@}{@y@}\right)^2+\left(\frac{@x@\cdot@s_y@}{@y@^2}\right)^2}" if isinstance(other, md) else
             r"\frac{@s_x@}{@y@}",
             [self, other],
             True,
